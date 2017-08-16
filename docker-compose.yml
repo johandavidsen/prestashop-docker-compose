@@ -1,0 +1,44 @@
+version: '2'
+
+services:
+  db:
+    image: mysql:5.7
+    volumes:
+      - ./db_data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "sorozcops"
+      MYSQL_DATABASE: "ps_db"
+      MYSQL_USER: "psscot"
+      MYSQL_PASSWORD: "psscotpd"
+    networks:
+      - internal
+  prestashop:
+    depends_on:
+      - db
+    image: prestashop/prestashop
+    volumes: 
+     - ./themes:/var/www/html/themes
+     - ./modules:/var/www/html/modules
+    ports:
+     - "80:80"
+    restart: always
+    environment:
+      DB_SERVER: "db"
+      DB_NAME: "ps_db"
+      DB_USER: "psscot"
+      DB_PASSWD: "psscotpd"
+      PS_LANGUAGE: es
+      PS_COUNTRY: co
+      PS_DEV_MODE: 1
+      PS_FOLDER_ADMIN: adminTest
+      PS_FOLDER_INSTALL: installTest
+      PS_INSTALL_AUTO: 1
+      PS_DOMAIN: localhost
+      PS_HANDLE_DYNAMIC_DOMAIN: 1
+    networks:
+      - internal
+      - public
+networks:
+  internal:
+  public: 
