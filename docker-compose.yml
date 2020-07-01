@@ -1,38 +1,40 @@
-version: '2'
+version: '3'
 
 services:
-  db:
+  database:
     image: mysql:5.7
     volumes:
-      - ./db_data:/var/lib/mysql
+      - ./data:/var/lib/mysql
     restart: always
     environment:
-      MYSQL_ROOT_PASSWORD: "sorozcops"
-      MYSQL_DATABASE: "ps_db"
-      MYSQL_USER: "psscot"
-      MYSQL_PASSWORD: "psscotpd"
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
     networks:
       - internal
   prestashop:
     depends_on:
-      - db
+      - database
     image: prestashop/prestashop
     volumes: 
      - ./themes:/var/www/html/themes
      - ./modules:/var/www/html/modules
     ports:
-     - "80:80"
+     - "8088:80"
     restart: always
     environment:
-      DB_SERVER: "db"
-      DB_NAME: "ps_db"
-      DB_USER: "psscot"
-      DB_PASSWD: "psscotpd"
-      PS_LANGUAGE: es
-      PS_COUNTRY: co
-      PS_DEV_MODE: 1
-      PS_FOLDER_ADMIN: adminTest
-      PS_FOLDER_INSTALL: installTest
+      DB_SERVER: "database"
+      DB_NAME: ${MYSQL_DATABASE}
+      DB_USER: ${MYSQL_USER}
+      DB_PASSWD: ${MYSQL_PASSWORD}
+      PS_LANGUAGE: ${PS_LANGUAGE}
+      PS_COUNTRY: ${PS_COUNTRY}
+      PS_DEV_MODE: ${PS_DEV_MODE}
+      PS_FOLDER_ADMIN: ${PS_FOLDER_ADMIN}
+      PS_FOLDER_INSTALL: ${PS_FOLDER_INSTALL}
+      ADMIN_MAIL: ${PS_ADMIN_MAIL}
+      ADMIN_PASSWD: ${PS_ADMIN_PASSWORD}
       PS_INSTALL_AUTO: 1
       PS_DOMAIN: localhost
       PS_HANDLE_DYNAMIC_DOMAIN: 1
